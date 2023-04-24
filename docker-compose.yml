@@ -1,0 +1,33 @@
+version: '3'
+services:
+  primary_dns:
+    image:  ubuntu/bind9:latest
+    container_name: primary_dns
+    volumes:
+      - ./primary/named.conf:/etc/bind/named.conf
+      - ./primary/db.example.com:/var/cache/bind/db.example.com
+    ports:
+      - "10053:53/udp"
+    restart: always
+    networks: #追加
+      internal_network: #追加
+        ipv4_address: 192.168.10.10 #追加
+
+  secondary_dns:
+    image: ubuntu/bind9:latest
+    container_name: secondary_dns
+    volumes:
+      - ./secondary/named.conf:/etc/bind/named.conf
+      - ./secondary/db.example.com:/var/cache/bind/db.example.com
+    ports:
+      - "10054:53/udp"
+    restart: always
+    networks: #追加
+      internal_network: #追加
+        ipv4_address: 192.168.10.20 #追加
+
+networks: #追加
+  internal_network: #追加
+    ipam: #追加
+      config: #追加
+        - subnet: 192.168.10.0/24 #追加
